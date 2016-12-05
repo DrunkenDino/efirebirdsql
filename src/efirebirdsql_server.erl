@@ -152,6 +152,15 @@ rollback(Mod, Sock, TransHandle) ->
         {op_response, {error, Msg}} -> {error, Msg}
     end.
 
+%% Create event wait loop.
+link_events(Mod, Sock, DbHandle, Pid, Events) ->
+    Mod:send(Sock, efirebirdsql_op:op_connect_request(DbHandle)),
+    case efirebirdsql_op:get_response(Mod, Sock) of
+        {op_response, {ok, Handle, _}} -> {ok, Handle};
+        {op_response, {error, Msg}} ->{error, Msg}
+    end.
+
+
 %% -- client interface --
 -spec start_link() -> {ok, pid()}.
 start_link() ->
@@ -250,6 +259,8 @@ handle_call(description, _From, State) ->
         _
             -> {reply, no_result, State}
     end;
+handle_call({link_events, Pid, Events}, _From, State) ->
+    link_events(State#state.mod, State#state.sock, State#state.db_handle, Pid, Events);
 handle_call({get_parameter, Name}, _From, State) ->
     Value1 = case lists:keysearch(Name, 1, State#state.parameters) of
         {value, {Name, Value}} -> Value;

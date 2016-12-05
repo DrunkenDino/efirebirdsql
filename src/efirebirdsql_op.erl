@@ -290,6 +290,31 @@ op_close_blob(BlobHandle) ->
         efirebirdsql_conv:byte4(op_val(op_close_blob)),
         efirebirdsql_conv:byte4(BlobHandle)]).
 
+op_que_events(DbHandle, Events, EventId) ->
+    ?debugFmt("op_que_events~n", []),
+    list_to_binary([
+        efirebirdsql_conv:byte4(op_val(op_que_events)),
+        efirebirdsql_conv:byte4(DbHandle),
+        %%% TODO: Params
+        efirebirdsql_conv:byte4(0),
+        efirebirdsql_conv:byte4(0),
+        efirebirdsql_conv:byte4(EventId)]).
+
+op_cancel_events(DbHandle, EventId) ->
+    ?debugFmt("op_cancel_events~n", []),
+    list_to_binary([
+        efirebirdsql_conv:byte4(op_val(op_cancel_events)),
+        efirebirdsql_conv:byte4(DbHandle),
+        efirebirdsql_conv:byte4(EventId)]).
+
+op_connect_request(DbHandle) ->
+    ?debugFmt("op_connect_request~n", []),
+    list_to_binary([
+        efirebirdsql_conv:byte4(op_val(op_connect_request)),
+        efirebirdsql_conv:byte4(1),
+        efirebirdsql_conv:byte4(DbHandle),
+        efirebirdsql_conv:byte4(0)]).
+
 %%% parse status vector
 parse_status_vector_integer(Mod, Sock) ->
     {ok, <<NumArg:32>>} = Mod:recv(Sock, 4),
