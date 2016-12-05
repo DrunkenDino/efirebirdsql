@@ -99,6 +99,11 @@ close(C) ->
     catch gen_server:cast(C, stop),
     ok.
 
+-spec link_events(efirebirdsql:connection(), pid(), list())
+    -> {ok, pid()} | {error, Reason :: binary()}.
+link_events(C, Pid, Events) ->
+    gen_server:call(C, {link_events, Pid, Events}, infinity).
+
 cancel(C) ->
     gen_server:cast(C, cancel).
 
