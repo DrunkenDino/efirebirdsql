@@ -87,6 +87,16 @@ calc_blr(XSqlVars) ->
         calc_blr_items(XSqlVars, []),
         [255, 76]]).
 
+op_que_event_params(List, []) ->
+    List;
+op_que_event_params(List, EventCountList) ->
+    % EventCountList = [{Name, Count}, ...]
+    [{Name, Count} | T] = EventCountList,
+    op_que_event_params(lists:flatten([
+        List,
+        efirebirdsql_conv:byte4(length(Name)), Name,
+        efirebirdsql_conv:byte4(Count)]), T).
+
 %%% create op_connect binary
 op_connect(Host, Username, _Password, Database) ->
     ?debugFmt("op_connect~n", []),
@@ -290,12 +300,13 @@ op_close_blob(BlobHandle) ->
         efirebirdsql_conv:byte4(op_val(op_close_blob)),
         efirebirdsql_conv:byte4(BlobHandle)]).
 
-op_que_events(DbHandle, Events, EventId) ->
+op_que_events(DbHandle, EventCountList, EventId) ->
     ?debugFmt("op_que_events~n", []),
+    % Events = [{Name, Count}, ...]
     list_to_binary([
         efirebirdsql_conv:byte4(op_val(op_que_events)),
         efirebirdsql_conv:byte4(DbHandle),
-        %%% TODO: Params
+        op_que_event_params([1], EventCountList),
         efirebirdsql_conv:byte4(0),
         efirebirdsql_conv:byte4(0),
         efirebirdsql_conv:byte4(EventId)]).
