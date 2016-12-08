@@ -88,14 +88,13 @@ calc_blr(XSqlVars) ->
         [255, 76]]).
 
 op_que_event_params(List, []) ->
-    List;
+    list:flatten(lists:reverse(List));
 op_que_event_params(List, EventCountList) ->
     % EventCountList = [{Name, Count}, ...]
-    [{Name, Count} | T] = EventCountList,
-    op_que_event_params(lists:flatten([
-        List,
-        efirebirdsql_conv:byte4(length(Name)), Name,
-        efirebirdsql_conv:byte4(Count)]), T).
+    [{<<Name>>, Count} | T] = EventCountList,
+    op_que_event_params(
+        [efirebirdsql_conv:byte4(Count), Name,
+        efirebirdsql_conv:byte4(length(Name)) | List], T).
 
 %%% create op_connect binary
 op_connect(Host, Username, _Password, Database) ->
