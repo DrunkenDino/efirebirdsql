@@ -91,7 +91,8 @@ op_que_event_params(List, []) ->
     list:flatten(lists:reverse(List));
 op_que_event_params(List, EventCountList) ->
     % EventCountList = [{Name, Count}, ...]
-    [{<<Name>>, Count} | T] = EventCountList,
+    [{BinName, Count} | T] = EventCountList,
+    Name = binary_to_list(BinName),
     op_que_event_params(
         [efirebirdsql_conv:byte4(Count), Name,
         efirebirdsql_conv:byte4(length(Name)) | List], T).
