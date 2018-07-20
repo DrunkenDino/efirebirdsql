@@ -212,6 +212,8 @@ handle_call(rollback, _From, State) ->
 handle_call(detach, _From, State) ->
     {reply, detach(State#state.mod,
         State#state.sock, State#state.db_handle), State};
+handle_call(closereally, _From, State) ->
+    {reply, gen_tcp:close(State#state.sock), State};    
 handle_call({prepare, Sql}, _From, State) ->
     case R = prepare_statement(State#state.mod, State#state.sock,
                 State#state.trans_handle, State#state.stmt_handle, Sql) of
